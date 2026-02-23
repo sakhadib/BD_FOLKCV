@@ -219,7 +219,7 @@ export default function ExplorePage({ onNavigate }: ExplorePageProps) {
             </div>
 
             {/* Info Panel */}
-            <div className="w-72 shrink-0 bg-white border border-stone-200 rounded-xl p-5 flex flex-col gap-4">
+            <div className="w-80 shrink-0 bg-white border border-stone-200 rounded-xl p-5 flex flex-col gap-4 overflow-y-auto">
               <div>
                 <h2 className="text-2xl font-bold text-stone-800">Image #{currentImage.id}</h2>
                 <p className="text-stone-500 text-sm mt-1">Round {currentImage.round_id}</p>
@@ -235,11 +235,60 @@ export default function ExplorePage({ onNavigate }: ExplorePageProps) {
                 <div className="text-sm font-mono font-semibold text-stone-700 break-words">{modelDisplay}</div>
               </div>
 
+              {/* Annotations Section */}
               <div className="border-t border-stone-200 pt-4">
-                <div className="text-xs uppercase tracking-wider text-stone-400 mb-1">Annotations</div>
-                <div className="text-lg font-semibold text-stone-700">
-                  {currentImage.annotations?.length || 0} submitted
+                <div className="text-xs uppercase tracking-wider text-stone-400 mb-3">
+                  Annotations ({currentImage.annotations?.length || 0})
                 </div>
+                
+                {(!currentImage.annotations || currentImage.annotations.length === 0) ? (
+                  <p className="text-sm text-stone-400 italic">No annotations yet</p>
+                ) : (
+                  <div className="space-y-4">
+                    {currentImage.annotations.map((annotation, idx) => (
+                      <div key={idx} className="bg-stone-50 rounded-lg p-3 border border-stone-100">
+                        {/* Annotator Email */}
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-stone-600 truncate" title={annotation.annotatorEmail}>
+                            {annotation.annotatorEmail.split('@')[0]}
+                          </span>
+                          <span className={`text-xs px-1.5 py-0.5 rounded ${annotation.hallucination ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                            {annotation.hallucination ? 'Hallucination' : 'Authentic'}
+                          </span>
+                        </div>
+                        
+                        {/* Scores Grid */}
+                        <div className="grid grid-cols-5 gap-1">
+                          <div className="text-center" title="Regional Cultural Authenticity">
+                            <div className="text-[10px] text-stone-400">RCA</div>
+                            <div className="text-sm font-bold text-stone-700">{annotation.scores.regionalCulturalAuthenticity}</div>
+                          </div>
+                          <div className="text-center" title="Folk Art Stylistic Fidelity">
+                            <div className="text-[10px] text-stone-400">FAS</div>
+                            <div className="text-sm font-bold text-stone-700">{annotation.scores.folkArtStylisticFidelity}</div>
+                          </div>
+                          <div className="text-center" title="Symbolic Narrative Depth">
+                            <div className="text-[10px] text-stone-400">SND</div>
+                            <div className="text-sm font-bold text-stone-700">{annotation.scores.symbolicNarrativeDepth}</div>
+                          </div>
+                          <div className="text-center" title="Visual Coherence Composition">
+                            <div className="text-[10px] text-stone-400">VCC</div>
+                            <div className="text-sm font-bold text-stone-700">{annotation.scores.visualCoherenceComposition}</div>
+                          </div>
+                          <div className="text-center" title="Emotional Cultural Expressiveness">
+                            <div className="text-[10px] text-stone-400">ECE</div>
+                            <div className="text-sm font-bold text-stone-700">{annotation.scores.emotionalCulturalExpressiveness}</div>
+                          </div>
+                        </div>
+
+                        {/* Timestamp */}
+                        <div className="text-[10px] text-stone-400 mt-2 text-right">
+                          {new Date(annotation.timestamp).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="mt-auto pt-4 text-xs text-stone-400">
